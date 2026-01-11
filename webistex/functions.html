@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Functions - ECPS</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    :root {
+      --primary-color: #1e40af;
+      --secondary-color: #3b82f6;
+      --accent-color: #f59e0b;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+      background: url('assets/img/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Sidebar (match homepage) */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(135deg, #003366, #005588);
+      backdrop-filter: blur(20px);
+      color: var(--white);
+      height: 100vh;
+      padding-top: 120px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar.active { transform: translateX(0); }
+
+    .sidebar nav ul { list-style: none; padding: 0 20px; }
+
+    .sidebar nav ul li { margin-bottom: 8px; border-radius: 12px; overflow: hidden; }
+
+    .sidebar nav ul li a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .sidebar nav ul li a i { margin-right: 10px; }
+
+    .sidebar nav ul li a:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(8px); }
+
+    .sidebar nav ul li a::before {
+      content: '';
+      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar nav ul li a:hover::before { transform: scaleY(1); }
+
+    .office-box { margin: 40px 20px 20px; padding: 24px; background: rgba(255,255,255,0.1); border-radius: 16px; font-size: 0.9em; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+    .office-box h4 { margin-bottom: 16px; font-size: 1.1em; font-weight: 600; }
+    .office-box a { color: #93c5fd; text-decoration: none; transition: color 0.3s ease; }
+    .office-box a:hover { color: var(--accent-color); }
+
+    /* Submenu styles */
+    .sidebar nav ul li.has-sub > a { justify-content: space-between; }
+    .sidebar nav ul li.has-sub > a .chev { transition: transform 0.3s ease; margin-left: 10px; }
+    .sidebar nav ul li.has-sub.open > a .chev { transform: rotate(90deg); }
+    .submenu { list-style: none; margin: 0 0 8px 0; padding-left: 14px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .submenu.open { max-height: 400px; }
+    .submenu li a { padding: 12px 16px; font-weight: 500; }
+    .sidebar nav ul li.has-sub:hover > a .chev { transform: rotate(90deg); }
+    .sidebar nav ul li.has-sub:hover .submenu { max-height: 400px; }
+    
+    /* Ensure submenu stays open when hovering over submenu items */
+    .sidebar nav ul li.has-sub .submenu:hover { max-height: 400px; }
+
+    /* Overlay */
+    .overlay { position: fixed; top: 0; left: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: none; z-index: 900; transition: all 0.3s ease; }
+    .overlay.active { display: block; }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #003366, #005588);
+      color: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+      position: fixed; width: 100%; top: 0; left: 0; z-index: 1002;
+    }
+
+    header .left-logo { display: flex; align-items: center; gap: 15px; margin-left: 20px; }
+    header img { height: 60px; }
+    header h2 { font-size: 1.8em; margin-left: auto; }
+
+    /* Menu Toggle */
+    .menu-toggle { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 12px; border-radius: 12px; transition: all 0.3s ease; z-index: 1003; }
+    .menu-toggle:hover { background: rgba(0, 0, 0, 0.05); }
+    .menu-toggle .bar { width: 25px; height: 3px; background-color: white; transition: all 0.3s ease; border-radius: 2px; }
+    .menu-toggle.open .bar:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+    .menu-toggle.open .bar:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+    /* Main */
+    .main-content { padding-top: 120px; min-height: 100vh; }
+
+    /* Section cards */
+    .section { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px); padding: 80px 40px; margin: 24px; border-radius: 24px; box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; }
+    .section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(135deg, #003366, #005588); }
+    .section h1 { font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 16px; background: linear-gradient(135deg, #003366, #005588); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .section h2 { font-size: 1.6em; font-weight: 600; color: #003366; text-align: center; margin: 24px 0 12px; }
+    .section p { font-size: 1.05em; line-height: 1.8; color: var(--text-dark); text-align: center; margin-bottom: 8px; }
+    .section ul { font-size: 1.05em; line-height: 1.8; color: var(--text-dark); margin: 10px auto; max-width: 1000px; }
+
+    /* Scroll Indicator */
+    .scroll-indicator { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); z-index: 1003; }
+    .scroll-progress { height: 100%; background: linear-gradient(135deg, #f59e0b, #f97316); width: 0%; transition: width 0.3s ease; }
+
+    /* Footer */
+    footer { text-align: center; padding: 32px; background: linear-gradient(135deg, #003366, #005588); color: var(--white); font-size: 0.95em; margin-top: 40px; position: relative; }
+    footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
+
+    /* SDG Grid Styles */
+    .sdg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 40px 0;
+    }
+
+    .sdg-item {
+      background: var(--gradient-primary);
+      color: var(--white);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .sdg-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Images */
+    .images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .images img {
+      width: 300px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; padding-top: 100px; }
+      header { padding: 12px 20px; }
+      header img { height: 40px; }
+      header h2 { font-size: 1.4em; }
+      .section { padding: 40px 24px; margin: 16px; border-radius: 16px; }
+      .section h1 { font-size: 2em; }
+      
+      .sdg-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+
+    }
+  </style>
+</head>
+<body>
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator"><div class="scroll-progress" id="scrollProgress"></div></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li class="has-sub" id="aboutMenu">
+          <a href="#" id="aboutToggle"><span><i class="fas fa-info-circle"></i> About Us</span> <i class="fas fa-chevron-right chev"></i></a>
+          <ul class="submenu" id="aboutSubmenu">
+            <li><a href="about-mission-vision-purpose.html"><i class="fas fa-bullseye"></i> Mission, Vision & Purpose</a></li>
+            <li><a href="about-board-of-directors.html"><i class="fas fa-users"></i> Board of Directors</a></li>
+            <li><a href="about-board-of-advisors.html"><i class="fas fa-user-tie"></i> Board of Advisors</a></li>
+          </ul>
+        </li>
+        <li><a href="functions.html"><i class="fas fa-cogs"></i> Functions</a></li>
+        <li><a href="partnership.html"><i class="fas fa-handshake"></i> Partnerships & Affiliations</a></li>
+        <li><a href="achievements.html"><i class="fas fa-trophy"></i> Achievements</a></li>
+        <li><a href="news.html"><i class="fas fa-newspaper"></i> News & Upcoming Events</a></li>
+        <li><a href="Photo Gallery.html"><i class="fas fa-image"></i> Photo Gallery</a></li>
+        <li><a href="#"><i class="fas fa-heart"></i> Donate</a></li>
+      </ul>
+    </nav>
+     <div class="office-box">
+      <h4><i class="fas fa-building"></i> Office Address</h4>
+      <p>37/115, KBC Building, S.A.Road,<br/> Kadavanthara, Kochi - 682 020, Kerala</p>
+      <h4><i class="fas fa-envelope"></i> Contact Emails</h4>
+      <p>
+        <a href="mailto:ecps.kochi@gmail.com"><i class="fas fa-envelope"></i> ecps.kochi@gmail.com</a><br/>
+        <a href="mailto:josephanil2007@gmail.com"><i class="fas fa-envelope"></i> josephanil2007@gmail.com</a><br/>
+        <a href="mailto:ajabrahamj@gmail.com"><i class="fas fa-envelope"></i> ajabrahamj@gmail.com</a>
+      </p>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Header -->
+  <header data-aos="fade-down">
+      <div class="left-logo">
+        <button class="menu-toggle" onclick="toggleSidebar()" id="menuToggleBtn">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+              <a href="index.html"><img src="assets/img/ECPS Nav Logo.png" alt="ECPS Logo" /></a>
+      </div>
+    <h2>ECPS</h2>
+    </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <section class="section" data-aos="fade-up" data-aos-delay="50">
+      <h1>17 United Nations Sustainable Development Goals (SDGs)</h1>
+      <p>MOBILIZING international support for implementation of the UN SDG 2030 and PFF (Pact for the Future) adopted by the UN General Assembly in 2024.</p>
+      <p>INVITING partners to implement and support the Global Development Agenda on SDGs and PFF.</p>
+      <div class="section-box" style="background:#f0f7ff; padding:20px; border-left:4px solid #007acc; border-radius:10px; margin-top:20px;">
+        <p style="text-align:left">A universal call to action adopted in 2015 to achieve a better and more sustainable future by 2030:</p>
+        <ul style="padding-left: 20px; line-height: 1.8; text-align:left">
+          <li>No Poverty</li><li>Zero Hunger</li><li>Good Health and Well‑Being</li><li>Quality Education</li><li>Gender Equality</li>
+          <li>Clean Water and Sanitation</li><li>Affordable and Clean Energy</li><li>Decent Work and Economic Growth</li><li>Industry, Innovation and Infrastructure</li>
+          <li>Reduced Inequalities</li><li>Sustainable Cities and Communities</li><li>Responsible Consumption and Production</li><li>Climate Action</li>
+          <li>Life Below Water</li><li>Life on Land</li><li>Peace, Justice and Strong Institutions</li><li>Partnerships for the Goals</li>
+        </ul>
+      </div>
+
+      <div class="images">
+        <img src="assets/img/about/mission1.jpg" alt="Mission Image 1">
+        <img src="assets/img/about/mission2.jpg" alt="Mission Image 2" style="width:400px;">
+        <img src="assets/img/about/mission3.jpg" alt="Mission Image 3">
+      </div>
+    </section>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({ duration: 800, easing: 'ease-in-out', once: false, mirror: true, offset: 100 });
+
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuBtn = document.getElementById('menuToggleBtn');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+      if (menuBtn) menuBtn.classList.toggle('open');
+      document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    }
+
+    // Close sidebar on link click
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+        const btn = document.getElementById('menuToggleBtn');
+        if (btn) btn.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // About submenu toggle (click and hover)
+    (function(){
+      const aboutToggle = document.getElementById('aboutToggle');
+      const aboutMenu = document.getElementById('aboutMenu');
+      const submenu = document.getElementById('aboutSubmenu');
+      if (aboutToggle && aboutMenu && submenu) {
+        // Click functionality
+        aboutToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          aboutMenu.classList.toggle('open');
+          submenu.classList.toggle('open');
+        });
+        
+        // Hover functionality
+        aboutMenu.addEventListener('mouseenter', () => {
+          aboutMenu.classList.add('open');
+          submenu.classList.add('open');
+        });
+        
+        aboutMenu.addEventListener('mouseleave', () => {
+          aboutMenu.classList.remove('open');
+          submenu.classList.remove('open');
+        });
+      }
+    })();
+
+    // Scroll progress
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.body.offsetHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+    });
+
+    // Smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Loading animation
+    document.querySelectorAll('section').forEach((sec, i) => {
+      sec.style.animationDelay = `${i * 0.1}s`;
+      sec.classList.add('loading');
+    });
+
+    // ESC closes sidebar
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('active')) toggleSidebar();
+      }
+    });
+  </script>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 NEPS NewEarth Projects And Services. All Rights Reserved.</p>
+    <p style="margin-top: 8px; opacity: 0.8;">Empowering communities, building futures, leaving no one behind.</p>
+  </footer>
+
+</body>
+</html>

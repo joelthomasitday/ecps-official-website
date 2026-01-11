@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievements - ECPS</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1e40af;
+      --secondary-color: #3b82f6;
+      --accent-color: #f59e0b;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: url('assets/img/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(135deg, #003366, #005588);
+      backdrop-filter: blur(20px);
+      color: var(--white);
+      height: 100vh;
+      padding-top: 120px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar.active { transform: translateX(0); }
+
+    .sidebar nav ul { list-style: none; padding: 0 20px; }
+
+    .sidebar nav ul li { margin-bottom: 8px; border-radius: 12px; overflow: hidden; }
+
+    .sidebar nav ul li a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .sidebar nav ul li a i { margin-right: 10px; }
+
+    .sidebar nav ul li a:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(8px); }
+
+    .sidebar nav ul li a::before {
+      content: '';
+      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar nav ul li a:hover::before { transform: scaleY(1); }
+
+    .office-box { margin: 40px 20px 20px; padding: 24px; background: rgba(255,255,255,0.1); border-radius: 16px; font-size: 0.9em; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+    .office-box h4 { margin-bottom: 16px; font-size: 1.1em; font-weight: 600; }
+    .office-box a { color: #93c5fd; text-decoration: none; transition: color 0.3s ease; }
+    .office-box a:hover { color: var(--accent-color); }
+
+    /* Submenu styles */
+    .sidebar nav ul li.has-sub > a { justify-content: space-between; }
+    .sidebar nav ul li.has-sub > a .chev { transition: transform 0.3s ease; margin-left: 10px; }
+    .sidebar nav ul li.has-sub.open > a .chev { transform: rotate(90deg); }
+    .submenu { list-style: none; margin: 0 0 8px 0; padding-left: 14px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .submenu.open { max-height: 400px; }
+    .submenu li a { padding: 12px 16px; font-weight: 500; }
+    .sidebar nav ul li.has-sub:hover > a .chev { transform: rotate(90deg); }
+    .sidebar nav ul li.has-sub:hover .submenu { max-height: 400px; }
+    
+    /* Ensure submenu stays open when hovering over submenu items */
+    .sidebar nav ul li.has-sub .submenu:hover { max-height: 400px; }
+
+    /* Overlay */
+    .overlay { position: fixed; top: 0; left: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: none; z-index: 900; transition: all 0.3s ease; }
+    .overlay.active { display: block; }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #003366, #005588);
+      color: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+      position: fixed; width: 100%; top: 0; left: 0; z-index: 1002;
+    }
+
+    header .left-logo { display: flex; align-items: center; gap: 15px; margin-left: 20px; }
+    header img { height: 60px; }
+    header h2 { font-size: 1.8em; margin-left: auto; }
+
+    /* Menu Toggle */
+    .menu-toggle { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 12px; border-radius: 12px; transition: all 0.3s ease; z-index: 1003; }
+    .menu-toggle:hover { background: rgba(0, 0, 0, 0.05); }
+    .menu-toggle .bar { width: 25px; height: 3px; background-color: white; transition: all 0.3s ease; border-radius: 2px; }
+    .menu-toggle.open .bar:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+    .menu-toggle.open .bar:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+    /* Main Content */
+    .main-content { padding-top: 120px; min-height: 100vh; }
+
+    .section { 
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 100px 50px;
+      margin: 30px;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.1), 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .section::before { 
+      content: ''; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      height: 6px; 
+      background: linear-gradient(135deg, #003366, #005588, #f59e0b, #f97316);
+      border-radius: 32px 32px 0 0;
+    }
+    
+    .section::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, rgba(0,51,102,0.1), rgba(245,158,11,0.1));
+      border-radius: 50%;
+      filter: blur(20px);
+      z-index: 0;
+    }
+
+    .section h1 {
+      font-size: 3.2em;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #003366, #005588, #f59e0b, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      letter-spacing: -0.02em;
+      animation: slideDown 1s ease-out;
+    }
+
+    .section h1::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 6px;
+      background: linear-gradient(135deg, #f59e0b, #f97316, #f59e0b);
+      border-radius: 3px;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+    }
+
+    /* Achievement Cards */
+    .achievement-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 50px;
+      border-radius: 28px;
+      margin-bottom: 50px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(255,255,255,0.3);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: slideDown 0.8s ease-out;
+    }
+
+    .achievement-card:nth-child(1) { animation-delay: 0.2s; }
+    .achievement-card:nth-child(2) { animation-delay: 0.4s; }
+    .achievement-card:nth-child(3) { animation-delay: 0.6s; }
+    .achievement-card:nth-child(4) { animation-delay: 0.8s; }
+    .achievement-card:nth-child(5) { animation-delay: 1.0s; }
+
+    /* Slide Down Animations */
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .achievement-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(135deg, #003366, #005588, #f59e0b, #f97316);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .achievement-card:hover {
+      transform: translateY(-15px) scale(1.03);
+      box-shadow: 0 25px 55px rgba(0,0,0,0.15), 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .achievement-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(0,51,102,0.05), rgba(245,158,11,0.05));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .achievement-card:hover::after {
+      opacity: 1;
+    }
+
+    .achievement-card h2 {
+      color: #003366;
+      font-size: 2.6em;
+      font-weight: 800;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #003366, #005588, #f59e0b, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: -0.01em;
+    }
+
+    .achievement-card p {
+      color: var(--text-dark);
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    .achievement-card .highlight {
+      background: linear-gradient(135deg, rgba(0,51,102,0.08), rgba(245,158,11,0.08));
+      padding: 24px;
+      border-radius: 16px;
+      border-left: 5px solid var(--accent-color);
+      margin: 24px 0;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .achievement-card .highlight h3 {
+      color: var(--primary-color);
+      font-size: 1.3em;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .achievement-card .highlight p {
+      margin-bottom: 0;
+      font-size: 1em;
+    }
+
+    .achievement-card .link-box {
+      background: linear-gradient(135deg, rgba(0,51,102,0.06), rgba(245,158,11,0.06));
+      padding: 28px;
+      border-radius: 16px;
+      border: 2px solid rgba(0,51,102,0.12);
+      margin: 24px 0;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+
+    .achievement-card .link-box:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .achievement-card .link-box a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .achievement-card .link-box a:hover {
+      color: var(--accent-color);
+    }
+
+    .achievement-card .link-box i {
+      font-size: 1.2em;
+    }
+
+    .achievement-card img {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .achievement-card img:hover {
+      transform: scale(1.02);
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1003;
+    }
+
+    .scroll-progress {
+      height: 100%;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 32px;
+      background: linear-gradient(135deg, #003366, #005588);
+      color: var(--white);
+      font-size: 0.95em;
+      margin-top: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+    }
+    
+    /* Advanced Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+      50% { box-shadow: 0 0 30px rgba(245,158,11,0.6); }
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .achievement-card {
+      animation: slideInUp 0.8s ease-out;
+    }
+    
+    .achievement-card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .achievement-card:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; padding-top: 100px; }
+      header { padding: 12px 20px; }
+      header img { height: 40px; }
+      header h2 { font-size: 1.4em; }
+      .section { padding: 40px 24px; margin: 16px; border-radius: 16px; }
+      .section h1 { font-size: 2em; }
+      .achievement-card { padding: 24px; }
+      .achievement-card h2 { font-size: 1.8em; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-progress" id="scrollProgress"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li class="has-sub" id="aboutMenu">
+          <a href="#" id="aboutToggle"><span><i class="fas fa-info-circle"></i> About Us</span> <i class="fas fa-chevron-right chev"></i></a>
+          <ul class="submenu" id="aboutSubmenu">
+            <li><a href="about-mission-vision-purpose.html"><i class="fas fa-bullseye"></i> Mission, Vision & Purpose</a></li>
+            <li><a href="about-board-of-directors.html"><i class="fas fa-users"></i> Board of Directors</a></li>
+            <li><a href="about-board-of-advisors.html"><i class="fas fa-user-tie"></i> Board of Advisors</a></li>
+          </ul>
+        </li>
+        <li><a href="functions.html"><i class="fas fa-cogs"></i> Functions</a></li>
+        <li><a href="partnership.html"><i class="fas fa-handshake"></i> Partnerships & Affiliations</a></li>
+        <li><a href="achievements.html"><i class="fas fa-trophy"></i> Achievements</a></li>
+        <li><a href="news.html"><i class="fas fa-newspaper"></i> News & Upcoming Events</a></li>
+        <li><a href="Photo Gallery.html"><i class="fas fa-image"></i> Photo Gallery</a></li>
+        <li><a href="#"><i class="fas fa-heart"></i> Donate</a></li>
+      </ul>
+    </nav>
+    <div class="office-box">
+      <h4><i class="fas fa-building"></i> Office Address</h4>
+      <p>37/115, KBC Building, S.A.Road,<br/> Kadavanthara, Kochi - 682 020, Kerala</p>
+      <h4><i class="fas fa-envelope"></i> Contact Emails</h4>
+      <p>
+        <a href="mailto:ecps.kochi@gmail.com"><i class="fas fa-envelope"></i> ecps.kochi@gmail.com</a><br/>
+        <a href="mailto:josephanil2007@gmail.com"><i class="fas fa-envelope"></i> josephanil2007@gmail.com</a><br/>
+        <a href="mailto:ajabrahamj@gmail.com"><i class="fas fa-envelope"></i> ajabrahamj@gmail.com</a>
+      </p>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Header -->
+  <header data-aos="fade-down">
+    <div class="left-logo">
+      <button class="menu-toggle" onclick="toggleSidebar()" id="menuToggleBtn">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <a href="index.html"><img src="assets/img/ECPS Nav Logo.png" alt="ECPS Logo" /></a>
+    </div>
+    <h2>ECPS</h2>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <section class="section" data-aos="fade-up" data-aos-delay="50">
+      <h1>Achievements</h1>
+      
+      <!-- Millennium World Peace Summit 2026 -->
+      <div class="achievement-card" data-aos="fade-up" data-aos-delay="100">
+        <h2>The Millennium World Peace Summit 2026</h2>
+        
+        <p>We are honored to announce our participation in the prestigious Millennium World Peace Summit 2026, a historic gathering that brings together the world's most influential religious and spiritual leaders at the United Nations. This landmark event represents a monumental step towards global peace and interfaith cooperation.</p>
+        
+        <div class="highlight">
+          <h3>🌟 A Historic Gathering</h3>
+          <p>The Millennium World Peace Summit brings together one thousand of the world's leading religious and spiritual figures, including His Holiness Pope John Paul II, The Most Reverend Dr. George Carey, Archbishop of Canterbury, and other distinguished leaders from all major faith traditions.</p>
+        </div>
+        
+        <div class="highlight">
+          <h3>🎯 Our Mission</h3>
+          <p>Since the end of World War II, armed conflicts have claimed over 27 million lives worldwide, with 85% being civilian casualties. The Summit's goal is to create a forum where preeminent leaders of all world religions can pledge concrete actions for achieving world peace through the Declaration for World Peace.</p>
+        </div>
+        
+        <div class="highlight">
+          <h3>🌍 Global Impact</h3>
+          <p>This unprecedented gathering establishes an International Advisory Council of Religious Leaders to function as a resource for the United Nations Secretary-General in resolving international conflicts, marking the first step toward developing a World Academy of Nonviolence and Ethics.</p>
+        </div>
+        
+        <div class="link-box">
+          <a href="https://www.wcorl.org/about-the-summit" target="_blank">
+            <i class="fas fa-external-link-alt"></i>
+            Learn More About The Millennium World Peace Summit
+          </a>
+        </div>
+        
+        <div class="video-preview-section" style="margin: 30px auto 0; max-width: 800px; text-align: center;">
+          <h3 style="color: #003366; margin-bottom: 24px; font-size: 1.8em; font-weight: 700; background: linear-gradient(135deg, #003366, #005588, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">📺 Watch the Summit Highlights</h3>
+          <div class="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border: 4px solid rgba(0,51,102,0.15); transition: all 0.3s ease;">
+            <iframe 
+              src="https://www.youtube.com/embed/du6Mt0_vcUs" 
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 20px;"
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          </div>
+          <p style="color: #6b7280; margin-top: 20px; font-size: 1.1em; font-style: italic; font-weight: 500; line-height: 1.6;">Experience the historic Millennium World Peace Summit through our official video</p>
+        </div>
+      </div>
+
+      <!-- International Peace20 Youth Summit -->
+      <div class="achievement-card" data-aos="fade-up" data-aos-delay="200">
+        <h2>International Peace20 Youth Summit 2023</h2>
+        
+        <p>ECPS proudly participated in the International Peace20 Youth Summit 2023 held in Kochi, Kerala, South India. This transformative event brought together young leaders from around the world to champion peace, justice, and sustainable development.</p>
+        
+        <div class="highlight">
+          <h3>🌟 Youth Leadership for Peace</h3>
+          <p>The Global Youth desire to tell world leaders that they do not want war, conflicts, intolerance, and tensions. They want Peace in Action, justice, and sustainable development, believing that peace and harmony is the only way humanity and the world can survive and co-exist peacefully.</p>
+        </div>
+        
+        <div class="highlight">
+          <h3>🎯 Summit Highlights</h3>
+          <p>The summit featured the 100-member Royal Philharmonic Orchestra performing India's National Anthem in London, youth ambassadors from Rajagiri Public School, Doha, and participants from around the world taking the Peace Pledge. The event emphasized the importance of youth leadership in achieving the UN Sustainable Development Goals.</p>
+        </div>
+        
+        <div class="highlight">
+          <h3>🌍 Global Youth Movement</h3>
+          <p>International Peace20 Youth Summit welcomes organizations to be part of this Global Youth Movement for World Peace and Sustainable Development. The summit serves as a platform for young leaders to voice their commitment to creating a more peaceful and sustainable world.</p>
+        </div>
+        
+        <div class="link-box">
+          <a href="https://www.ip20ysindia.in/" target="_blank">
+            <i class="fas fa-external-link-alt"></i>
+            Visit International Peace20 Youth Summit Website
+          </a>
+          <a href="https://www.ip20ysindia.in/blog" target="_blank" style="margin-top: 12px; display: inline-block;">
+            <i class="fas fa-blog"></i>
+            Read IP20YS News & Updates
+          </a>
+        </div>
+        
+        <div class="pledge-section" style="margin: 30px auto 0; text-align: center; max-width: 600px;">
+          <h3 style="color: #003366; margin-bottom: 20px; font-size: 1.8em; font-weight: 700; background: linear-gradient(135deg, #003366, #005588, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Are You Ready?</h3>
+          <div class="pledge-button-container" style="background: linear-gradient(135deg, rgba(0,51,102,0.08), rgba(245,158,11,0.08)); padding: 30px; border-radius: 20px; border: 2px solid rgba(0,51,102,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+            <a href="https://peacegate.in/ip20ys-pledge" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #003366, #005588); color: white; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 1.2em; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,51,102,0.3); border: 2px solid rgba(245,158,11,0.3);">
+              <i class="fas fa-hand-holding-heart" style="margin-right: 10px;"></i>
+              Take the Pledge
+            </a>
+          </div>
+        </div>
+        
+        <div class="ip20ys-gallery" style="margin: 50px auto 0; text-align: center; position: relative;">
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1100px; margin: 0 auto;">
+            <!-- Image 1 -->
+            <div class="premium-image-card" style="position: relative; overflow: hidden; border-radius: 20px; background: white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.4s ease; border: 1px solid rgba(0,0,0,0.1);">
+              <div style="position: relative; overflow: hidden; border-radius: 18px;">
+                <img src="assets/img/ip20ys.jpg" alt="International Peace20 Youth Summit 2023" style="width: 100%; height: 280px; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+              </div>
+            </div>
+            
+            <!-- Image 2 -->
+            <div class="premium-image-card" style="position: relative; overflow: hidden; border-radius: 20px; background: white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.4s ease; border: 1px solid rgba(0,0,0,0.1);">
+              <div style="position: relative; overflow: hidden; border-radius: 18px;">
+                <img src="assets/img/achievements/ip20ys 1.png" alt="International Peace20 Youth Summit 2023 - Image 1" style="width: 100%; height: 280px; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+              </div>
+            </div>
+            
+            <!-- Image 3 -->
+            <div class="premium-image-card" style="position: relative; overflow: hidden; border-radius: 20px; background: white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: all 0.4s ease; border: 1px solid rgba(0,0,0,0.1);">
+              <div style="position: relative; overflow: hidden; border-radius: 18px;">
+                <img src="assets/img/achievements/ip20ys 2.png" alt="International Peace20 Youth Summit 2023 - Image 2" style="width: 100%; height: 280px; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Clean Hover Effects -->
+          <style>
+            .premium-image-card:hover {
+              transform: translateY(-5px);
+              box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            }
+          </style>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Enhanced Footer -->
+  <footer>
+    <p>&copy; 2026 NEPS NewEarth Projects And Services. All Rights Reserved.</p>
+    <p style="margin-top: 8px; opacity: 0.8;">Empowering communities, building futures, leaving no one behind.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: false,
+      mirror: true,
+      offset: 100
+    });
+
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuBtn = document.getElementById('menuToggleBtn');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+      if (menuBtn) menuBtn.classList.toggle('open');
+      document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    }
+
+    // Close sidebar on link click
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+        const btn = document.getElementById('menuToggleBtn');
+        if (btn) btn.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // About submenu toggle (click and hover)
+    (function(){
+      const aboutToggle = document.getElementById('aboutToggle');
+      const aboutMenu = document.getElementById('aboutMenu');
+      const submenu = document.getElementById('aboutSubmenu');
+      if (aboutToggle && aboutMenu && submenu) {
+        // Click functionality
+        aboutToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          aboutMenu.classList.toggle('open');
+          submenu.classList.toggle('open');
+        });
+        
+        // Hover functionality
+        aboutMenu.addEventListener('mouseenter', () => {
+          aboutMenu.classList.add('open');
+          submenu.classList.add('open');
+        });
+        
+        aboutMenu.addEventListener('mouseleave', () => {
+          aboutMenu.classList.remove('open');
+          submenu.classList.remove('open');
+        });
+      }
+    })();
+
+    // Scroll progress
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.body.offsetHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+    });
+
+    // Smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        if (sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          const btn = document.getElementById('menuToggleBtn');
+          if (btn) btn.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      }
+    });
+  </script>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <img src="assets/img/ECPS Nav Logo.png" alt="NEPS Logo" class="footer-logo">
+    <p>NewEarth Projects And Services</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Board of Advisors - ECPS</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: url('assets/img/background.jpg') no-repeat center center fixed; background-size: cover; color: #1f2937; overflow-x: hidden; line-height: 1.6; }
+    .sidebar { width: 280px; background: linear-gradient(135deg, #003366, #005588); backdrop-filter: blur(20px); color: #fff; height: 100vh; padding-top: 120px; position: fixed; top: 0; left: 0; transform: translateX(-100%); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); z-index: 1000; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.1); }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar nav ul { list-style: none; padding: 0 20px; }
+    .sidebar nav ul li { margin-bottom: 8px; border-radius: 12px; overflow: hidden; }
+    .sidebar nav ul li a { color: #fff; text-decoration: none; font-weight: 500; display: flex; align-items: center; padding: 16px 20px; transition: all 0.3s ease; border-radius: 12px; position: relative; }
+    .sidebar nav ul li a i { margin-right: 10px; }
+    .sidebar nav ul li.has-sub > a { justify-content: space-between; }
+    .sidebar nav ul li.has-sub > a .chev { transition: transform 0.3s ease; margin-left: 10px; }
+    .sidebar nav ul li.has-sub.open > a .chev { transform: rotate(90deg); }
+    .submenu { list-style: none; margin: 0 0 8px 0; padding-left: 14px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .submenu.open { max-height: 400px; }
+    .submenu li a { padding: 12px 16px; font-weight: 500; }
+    .sidebar nav ul li.has-sub:hover > a .chev { transform: rotate(90deg); }
+    .sidebar nav ul li.has-sub:hover .submenu { max-height: 400px; }
+    
+    /* Ensure submenu stays open when hovering over submenu items */
+    .sidebar nav ul li.has-sub .submenu:hover { max-height: 400px; }
+    .sidebar nav ul li a:hover { background: rgba(255,255,255,0.1); transform: translateX(8px); }
+    .sidebar nav ul li a::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: #f59e0b; transform: scaleY(0); transition: transform 0.3s ease; }
+    .sidebar nav ul li a:hover::before { transform: scaleY(1); }
+    .office-box { margin: 40px 20px 20px; padding: 24px; background: rgba(255,255,255,0.1); border-radius: 16px; font-size: 0.9em; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    .office-box h4 { margin-bottom: 16px; font-size: 1.1em; font-weight: 600; }
+    .office-box a { color: #93c5fd; text-decoration: none; transition: color 0.3s ease; }
+    .office-box a:hover { color: #f59e0b; }
+    .overlay { position: fixed; top:0; left:0; height:100%; width:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:none; z-index:900; transition: all 0.3s ease; }
+    .overlay.active { display:block; }
+    header { background: linear-gradient(135deg, #003366, #005588); color:#fff; padding:20px 40px; display:flex; align-items:center; justify-content:space-between; position:fixed; width:100%; top:0; left:0; z-index:1002; }
+    header .left-logo { display:flex; align-items:center; gap:15px; margin-left:20px; }
+    header img { height:60px; }
+    header h2 { font-size:1.8em; margin-left:auto; }
+    .menu-toggle { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:12px; border-radius:12px; transition:all 0.3s ease; z-index:1003; }
+    .menu-toggle:hover { background: rgba(0,0,0,0.05); }
+    .menu-toggle .bar { width:25px; height:3px; background:#fff; border-radius:2px; transition:all 0.3s ease; }
+    .menu-toggle.open .bar:nth-child(1){ transform:rotate(45deg) translate(6px,6px);} .menu-toggle.open .bar:nth-child(2){opacity:0;} .menu-toggle.open .bar:nth-child(3){ transform:rotate(-45deg) translate(6px,-6px);} 
+    .main-content { padding-top:120px; min-height:100vh; }
+    .section { 
+      background: rgba(255,255,255,0.7); 
+      backdrop-filter: blur(8px); 
+      padding: 60px 40px; 
+      margin: 24px; 
+      border-radius: 20px; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+      border: 1px solid rgba(255,255,255,0.3); 
+      position: relative; 
+    }
+    .section::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(135deg, #003366, #005588); }
+    .section h1 { font-size:2.8em; font-weight:700; text-align:center; margin-bottom:32px; background: linear-gradient(135deg, #003366, #005588, #f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; position:relative; }
+    .section h1::after { content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); width:80px; height:4px; background: linear-gradient(135deg, #f59e0b, #f97316); border-radius:2px; }
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+      gap: 30px; 
+      margin-top: 50px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .card { 
+      background: white; 
+      padding: 30px; 
+      border-radius: 15px; 
+      text-align: center; 
+      transition: all 0.3s ease; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+      border: 1px solid #e5e7eb; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    .card:hover { 
+      transform: translateY(-5px); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    }
+    .card img { 
+      width: 120px; 
+      height: 120px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      margin-bottom: 20px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+      border: 3px solid #fff; 
+    }
+    .card h3 { 
+      color: #1f2937; 
+      font-size: 1.3rem; 
+      font-weight: 600; 
+      margin-bottom: 8px; 
+      line-height: 1.3;
+    }
+    .card .role { 
+      color: #6b7280; 
+      font-size: 0.9rem; 
+      margin-bottom: 20px; 
+      line-height: 1.4;
+    }
+    .view-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .view-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    .card p { color:#4a5568; font-size:0.95rem; text-align:justify; line-height:1.7; margin-bottom:12px; }
+    .card p:last-child { margin-bottom:0; }
+    .scroll-indicator { position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1); z-index:1003; }
+    .scroll-progress { height:100%; background: linear-gradient(135deg, #f59e0b, #f97316); width:0%; transition: width 0.3s ease; }
+    footer { text-align:center; padding:32px; background: linear-gradient(135deg, #003366, #005588); color:#fff; font-size:0.95em; margin-top:40px; position:relative; }
+    footer::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
+    @media (max-width: 768px) { 
+      .sidebar { width: 100%; padding-top: 100px; } 
+      header { padding: 12px 20px; } 
+      header img { height: 40px; } 
+      .section { padding: 40px 20px; margin: 16px; border-radius: 16px; } 
+      .section h1 { font-size: 2em; }
+      .grid { 
+        grid-template-columns: 1fr; 
+        gap: 20px; 
+        margin-top: 30px;
+      }
+      .card { 
+        padding: 25px; 
+      }
+      .card img { 
+        width: 100px; 
+        height: 100px; 
+      }
+      .card h3 { 
+        font-size: 1.2rem; 
+      }
+      .card .role { 
+        font-size: 0.85rem; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-indicator"><div class="scroll-progress" id="scrollProgress"></div></div>
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li class="has-sub open" id="aboutMenu">
+          <a href="#" id="aboutToggle"><span><i class="fas fa-info-circle"></i> About Us</span> <i class="fas fa-chevron-right chev"></i></a>
+          <ul class="submenu open" id="aboutSubmenu">
+            <li><a href="about-mission-vision-purpose.html"><i class="fas fa-bullseye"></i> Mission, Vision & Purpose</a></li>
+            <li><a href="about-board-of-directors.html"><i class="fas fa-users"></i> Board of Directors</a></li>
+            <li><a href="about-board-of-advisors.html"><i class="fas fa-user-tie"></i> Board of Advisors</a></li>
+          </ul>
+        </li>
+        <li><a href="functions.html"><i class="fas fa-cogs"></i> Functions</a></li>
+        <li><a href="partnership.html"><i class="fas fa-handshake"></i> Partnerships & Affiliations</a></li>
+        <li><a href="achievements.html"><i class="fas fa-trophy"></i> Achievements</a></li>
+        <li><a href="news.html"><i class="fas fa-newspaper"></i> News & Upcoming Events</a></li>
+        <li><a href="Photo Gallery.html"><i class="fas fa-image"></i> Photo Gallery</a></li>
+        <li><a href="#"><i class="fas fa-heart"></i> Donate</a></li>
+      </ul>
+    </nav>
+    <div class="office-box">
+      <h4><i class="fas fa-building"></i> Office Address</h4>
+      <p>37/115, KBC Building, S.A.Road,<br/> Kadavanthara, Kochi - 682 020, Kerala</p>
+      <h4><i class="fas fa-envelope"></i> Contact Emails</h4>
+      <p>
+        <a href="mailto:ecps.kochi@gmail.com"><i class="fas fa-envelope"></i> ecps.kochi@gmail.com</a><br/>
+        <a href="mailto:josephanil2007@gmail.com"><i class="fas fa-envelope"></i> josephanil2007@gmail.com</a><br/>
+        <a href="mailto:ajabrahamj@gmail.com"><i class="fas fa-envelope"></i> ajabrahamj@gmail.com</a>
+      </p>
+    </div>
+  </aside>
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <div class="main-content">
+    <header data-aos="fade-down">
+      <div class="left-logo">
+        <button class="menu-toggle" onclick="toggleSidebar()" id="menuToggleBtn">
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+        <a href="index.html"><img src="assets/img/ECPS Nav Logo.png" alt="ECPS Logo" /></a>
+      </div>
+      <h2>ECPS</h2>
+    </header>
+    <section class="section" data-aos="fade-up" data-aos-delay="50">
+      <h1>Board of Advisors</h1>
+      <div class="grid">
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <img src="assets/img/B R Subramani adv-1.jpg" alt="Mr. Bremadesam Raman Subramanian">
+          <h3>Mr. Bremadesam Raman Subramanian</h3>
+          <div class="role">International Finance & Strategy</div>
+          <button class="view-btn" onclick="viewAdvisor('bremadesam')">View</button>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="150">
+          <img src="assets/img/Ravi adv-2.jpg" alt="Er. Ravi Krishanan R.">
+          <h3>Er. Ravi Krishanan R.</h3>
+          <div class="role">Technology & Strategy</div>
+          <button class="view-btn" onclick="viewAdvisor('ravi')">View</button>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <img src="assets/img/B R Lekshmi adv-3.jpg" alt="Dr. B.R.Lakshmi">
+          <h3>Dr. B.R.Lakshmi</h3>
+          <div class="role">Global Health & Community Development</div>
+          <button class="view-btn" onclick="viewAdvisor('lakshmi')">View</button>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="250">
+          <img src="assets/img/Sreekumar menon.jpg" alt="Dr. Sreekumar Menon">
+          <h3>Dr. Sreekumar Menon</h3>
+          <div class="role">Director General at the National Academy of Customs, Excise & Narcotics (NACEN)</div>
+          <button class="view-btn" onclick="viewAdvisor('sreekumar')">View</button>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <img src="assets/img/Thomas VArghese.png" alt="Mr. Thomas Varghese">
+          <h3>Mr. Thomas Varghese</h3>
+          <div class="role">CEO The Kochi-Muziris Biennale Foundations</div>
+          <button class="view-btn" onclick="viewAdvisor('thomas')">View</button>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="350">
+          <img src="assets/img/Jose Matheickal.png" alt="Jose Matheickal">
+          <h3>Jose Matheickal</h3>
+          <div class="role">Director IMO London</div>
+          <button class="view-btn" onclick="viewAdvisor('jose')">View</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, easing: 'ease-in-out', once: false, mirror: true, offset: 100 });
+    function toggleSidebar(){ const s=document.getElementById('sidebar'); const o=document.getElementById('overlay'); const b=document.getElementById('menuToggleBtn'); s.classList.toggle('active'); o.classList.toggle('active'); if(b) b.classList.toggle('open'); document.body.style.overflow = s.classList.contains('active') ? 'hidden' : ''; }
+    document.querySelectorAll('.sidebar a').forEach(a=>a.addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('active');document.getElementById('overlay').classList.remove('active');const b=document.getElementById('menuToggleBtn'); if(b) b.classList.remove('open'); document.body.style.overflow='';}));
+    window.addEventListener('scroll',()=>{ const t=window.pageYOffset; const d=document.body.offsetHeight - window.innerHeight; const p=(t/d)*100; document.getElementById('scrollProgress').style.width=p+'%'; });
+    // About submenu toggle (click and hover)
+    (function(){
+      const aboutToggle = document.getElementById('aboutToggle');
+      const aboutMenu = document.getElementById('aboutMenu');
+      const submenu = document.getElementById('aboutSubmenu');
+      if (aboutToggle && aboutMenu && submenu) {
+        // Click functionality
+        aboutToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          aboutMenu.classList.toggle('open');
+          submenu.classList.toggle('open');
+        });
+        
+        // Hover functionality
+        aboutMenu.addEventListener('mouseenter', () => {
+          aboutMenu.classList.add('open');
+          submenu.classList.add('open');
+        });
+        
+        aboutMenu.addEventListener('mouseleave', () => {
+          aboutMenu.classList.remove('open');
+          submenu.classList.remove('open');
+        });
+      }
+    })();
+
+    // View Advisor function
+    function viewAdvisor(advisorId) {
+      const advisors = {
+        'bremadesam': {
+          name: 'Mr. Bremadesam Raman Subramanian',
+          role: 'International Finance & Strategy',
+          details: 'Based in Dubai, UAE, with extensive experience in international finance and wealth management. Currently associated with EFG (Middle East) Limited, bringing strategic financial expertise to the region.'
+        },
+        'ravi': {
+          name: 'Er. Ravi Krishanan R.',
+          role: 'Technology & Strategy',
+          details: 'Seasoned technology professional with 25+ years of experience in product development, quality assurance, and revenue generation across Datacom and Education sectors.'
+        },
+        'lakshmi': {
+          name: 'Dr. B.R.Lakshmi',
+          role: 'Global Health & Community Development',
+          details: 'Renowned healthcare leader and community development expert with decades of experience in transforming public health systems and pioneering innovative healthcare delivery models.'
+        },
+        'sreekumar': {
+          name: 'Dr. Sreekumar Menon',
+          role: 'Director General at the National Academy of Customs, Excise & Narcotics (NACEN)',
+          details: 'Leading expert in customs and excise administration, providing strategic guidance on international trade policies and regulatory frameworks.'
+        },
+        'thomas': {
+          name: 'Mr. Thomas Varghese',
+          role: 'CEO The Kochi-Muziris Biennale Foundations',
+          details: 'Visionary leader in arts and culture, driving international cultural exchange and promoting artistic excellence through the prestigious Kochi-Muziris Biennale.'
+        },
+        'jose': {
+          name: 'Jose Matheickal',
+          role: 'Director IMO London',
+          details: 'International maritime expert and leader at the International Maritime Organization, specializing in global maritime safety, security, and environmental protection.'
+        }
+      };
+      
+      const advisor = advisors[advisorId];
+      if (advisor) {
+        alert(`${advisor.name}\n\nRole: ${advisor.role}\n\nDetails: ${advisor.details}`);
+      }
+    }
+  </script>
+  <footer>
+    <p>&copy; 2026 NEPS NewEarth Projects And Services. All Rights Reserved.</p>
+    <p style="margin-top:8px; opacity:0.8;">Empowering communities, building futures, leaving no one behind.</p>
+  </footer>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <img src="assets/img/ECPS Nav Logo.png" alt="NEPS Logo" class="footer-logo">
+    <p>NewEarth Projects And Services</p>
+  </div>
+</footer>
+
+</body>
+</html>

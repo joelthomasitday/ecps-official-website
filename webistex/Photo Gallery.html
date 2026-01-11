@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECPS - Photo Gallery</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #003366;
+      --secondary-color: #005588;
+      --accent-color: #f59e0b;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --white: #ffffff;
+      --gradient-primary: linear-gradient(135deg, #003366, #005588);
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: url('assets/img/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-dark);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--gradient-primary);
+      backdrop-filter: blur(20px);
+      color: var(--white);
+      height: 100vh;
+      padding-top: 120px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      z-index: 1000;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0 20px;
+    }
+
+    .sidebar nav ul li {
+      margin-bottom: 8px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .sidebar nav ul li a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .sidebar nav ul li a i {
+      margin-right: 10px;
+    }
+
+    .sidebar nav ul li.has-sub > a {
+      justify-content: space-between;
+    }
+
+    .sidebar nav ul li.has-sub > a .chev {
+      transition: transform 0.3s ease;
+      margin-left: 10px;
+    }
+
+    .sidebar nav ul li.has-sub.open > a .chev {
+      transform: rotate(90deg);
+    }
+
+    .submenu {
+      list-style: none;
+      margin: 0 0 8px 0;
+      padding-left: 14px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .submenu.open {
+      max-height: 400px;
+    }
+
+    .submenu li a {
+      padding: 12px 16px;
+      font-weight: 500;
+    }
+    
+    /* Hover functionality for About submenu */
+    .sidebar nav ul li.has-sub:hover > a .chev {
+      transform: rotate(90deg);
+    }
+    
+    .sidebar nav ul li.has-sub:hover .submenu {
+      max-height: 400px;
+    }
+    
+    /* Ensure submenu stays open when hovering over submenu items */
+    .sidebar nav ul li.has-sub .submenu:hover {
+      max-height: 400px;
+    }
+
+    .sidebar nav ul li a:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(8px);
+    }
+
+    .sidebar nav ul li a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar nav ul li a:hover::before {
+      transform: scaleY(1);
+    }
+
+    .sidebar .office-box {
+      margin: 40px 20px 20px;
+      padding: 24px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      font-size: 0.9em;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .sidebar .office-box h4 {
+      margin-bottom: 16px;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    .sidebar .office-box a {
+      color: #93c5fd;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar .office-box a:hover {
+      color: var(--accent-color);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      z-index: 900;
+      transition: all 0.3s ease;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    header {
+      background: var(--gradient-primary);
+      color: var(--white);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1002;
+    }
+
+    header .left-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 20px;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    header h2 {
+      font-size: 1.8em;
+      margin-left: auto;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      z-index: 1003;
+    }
+
+    .menu-toggle:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .menu-toggle .bar {
+      width: 25px;
+      height: 3px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.open .bar:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .menu-toggle.open .bar:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.open .bar:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    .main-content {
+      padding-top: 120px;
+      min-height: 100vh;
+    }
+
+    .gallery-section {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 80px 40px;
+      margin: 24px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .gallery-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .gallery-section h1 {
+      font-size: 2.4em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gallery-section p {
+      color: var(--text-light);
+      font-size: 1.1em;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    .photo-gallery img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+    }
+
+    .photo-gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Gallery Categories */
+    .gallery-category {
+      margin-bottom: 60px;
+    }
+
+    .gallery-category h2 {
+      color: #003366;
+      font-size: 2em;
+      margin-bottom: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .gallery-category h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(135deg, #003366, #005588);
+      border-radius: 2px;
+    }
+
+    /* Modal Styles for Image Popup */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 900px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-content {
+      animation-name: zoom;
+      animation-duration: 0.6s;
+    }
+
+    @keyframes zoom {
+      from {transform: scale(0)}
+      to {transform: scale(1)}
+    }
+
+    .close {
+      position: absolute;
+      top: 50px;
+      right: 35px;
+      color: var(--white);
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: var(--accent-color);
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      z-index: 1003;
+    }
+
+    .scroll-progress {
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent-color), #f97316);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 32px;
+      background: var(--gradient-primary);
+      color: var(--white);
+      font-size: 0.95em;
+      margin-top: 40px;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        padding-top: 100px;
+      }
+      
+      header {
+        padding: 12px 20px;
+      }
+      
+      header img {
+        height: 40px;
+      }
+      
+      .gallery-section {
+        padding: 40px 24px;
+        margin: 16px;
+        border-radius: 16px;
+      }
+      
+      .gallery-section h1 {
+        font-size: 2em;
+      }
+
+      .gallery-category h2 {
+        font-size: 1.6em;
+      }
+
+      .photo-gallery {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .photo-gallery img {
+        height: 200px;
+      }
+
+      .modal-content {
+        width: 95%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-section h1 {
+        font-size: 1.8em;
+      }
+
+      .gallery-category h2 {
+        font-size: 1.4em;
+      }
+
+      .photo-gallery {
+        padding: 10px;
+      }
+      
+      .photo-gallery img {
+        height: 180px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-progress" id="scrollProgress"></div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li class="has-sub" id="aboutMenu">
+          <a href="#" id="aboutToggle"><span><i class="fas fa-info-circle"></i> About Us</span> <i class="fas fa-chevron-right chev"></i></a>
+          <ul class="submenu" id="aboutSubmenu">
+            <li><a href="about-mission-vision-purpose.html"><i class="fas fa-bullseye"></i> Mission, Vision & Purpose</a></li>
+            <li><a href="about-board-of-directors.html"><i class="fas fa-users"></i> Board of Directors</a></li>
+            <li><a href="about-board-of-advisors.html"><i class="fas fa-user-tie"></i> Board of Advisors</a></li>
+          </ul>
+        </li>
+        <li><a href="functions.html"><i class="fas fa-cogs"></i> Functions</a></li>
+        <li><a href="partnership.html"><i class="fas fa-handshake"></i> Partnerships & Affiliations</a></li>
+        <li><a href="achievements.html"><i class="fas fa-trophy"></i> Achievements</a></li>
+        <li><a href="news.html"><i class="fas fa-newspaper"></i> News & Upcoming Events</a></li>
+        <li><a href="Photo Gallery.html"><i class="fas fa-image"></i> Photo Gallery</a></li>
+        <li><a href="#"><i class="fas fa-heart"></i> Donate</a></li>
+      </ul>
+    </nav>
+    <div class="office-box">
+      <h4><i class="fas fa-building"></i> Office Address</h4>
+      <p>37/115, KBC Building, S.A.Road,<br/> Kadavanthara, Kochi - 682 020, Kerala</p>
+      <h4><i class="fas fa-envelope"></i> Contact Emails</h4>
+      <p>
+        <a href="mailto:ecps.kochi@gmail.com"><i class="fas fa-envelope"></i> ecps.kochi@gmail.com</a><br/>
+        <a href="mailto:josephanil2007@gmail.com"><i class="fas fa-envelope"></i> josephanil2007@gmail.com</a><br/>
+        <a href="mailto:ajabrahamj@gmail.com"><i class="fas fa-envelope"></i> ajabrahamj@gmail.com</a>
+      </p>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-content">
+    <header data-aos="fade-down">
+      <div class="left-logo">
+        <button class="menu-toggle" onclick="toggleSidebar()" id="menuToggleBtn">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <a href="index.html"><img src="assets/img/ECPS Nav Logo.png" alt="ECPS Logo" /></a>
+      </div>
+      <h2>ECPS</h2>
+    </header>
+
+    <section class="gallery-section" data-aos="zoom-in">
+      <h1>Photo Gallery</h1>
+      <p>Explore our collection of memorable moments, events, and achievements. These photographs capture the essence of our work and partnerships around the world.</p>
+
+      <!-- Photo Gallery Grid -->
+      <div class="gallery-category" data-aos="fade-up" data-aos-delay="100">
+        <div class="photo-gallery">
+          <!-- Add your photos here -->
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.02_c46c12ab.jpg" alt="Photo 1" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.02_d0673a45.jpg" alt="Photo 2" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 02.00.18_5df5ad31.jpg" alt="Photo 3" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 02.00.18_696a934c.jpg" alt="Photo 4" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 02.00.18_aed0057c.jpg" alt="Photo 5" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.57_b8d33bd3.jpg" alt="Photo 6" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.55_147387b1.jpg" alt="Photo 7" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.56_e8722663.jpg" alt="Photo 8" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.58_2f173428.jpg" alt="Photo 9" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.54_d61b92d1.jpg" alt="Photo 10" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.04_b7243b72.jpg" alt="Photo 11" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.03_c5eb267e.jpg" alt="Photo 12" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.03_7016488a.jpg" alt="Photo 13" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.05_69fa5745.jpg" alt="Photo 14" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.05_3752e20d.jpg" alt="Photo 15" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.06_13079d7f.jpg" alt="Photo 16" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.07_9ce9ee4e.jpg" alt="Photo 17" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.07_d4679568.jpg" alt="Photo 18" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.27_f8b8dd99.jpg" alt="Photo 19" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.27_7fe22ac9.jpg" alt="Photo 20" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.27_8c41925a.jpg" alt="Photo 21" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.07_0dadcdf3.jpg" alt="Photo 22" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.28_38c6d71f.jpg" alt="Photo 23" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.28_3576ca46.jpg" alt="Photo 24" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.27_29798ddc.jpg" alt="Photo 25" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.28_8ba2f420.jpg" alt="Photo 26" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.29_9fedcfe2.jpg" alt="Photo 27" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.29_3dad5d6e.jpg" alt="Photo 28" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.30_6bbe5bb0.jpg" alt="Photo 29" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.30_508ca292.jpg" alt="Photo 30" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.30_1520b69e.jpg" alt="Photo 31" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.03_86519974.jpg" alt="Photo 32" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.04_fbf32336.jpg" alt="Photo 33" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.49_40fe4cf8.jpg" alt="Photo 34" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.49_c756c8f6.jpg" alt="Photo 35" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.49_c756c8f6.jpg" alt="Photo 36" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.50_596424cb.jpg" alt="Photo 37" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.51_26dcd2f8.jpg" alt="Photo 38" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.51_b2eabe29.jpg" alt="Photo 39" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.51_f4cd51df.jpg" alt="Photo 40" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.53_f30a7a35.jpg" alt="Photo 41" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.30_101d02f2.jpg" alt="Photo 42" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.43_abe9a8a4.jpg" alt="Photo 43" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.43_1e34f393.jpg" alt="Photo 44" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.43_7633d392.jpg" alt="Photo 45" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.44_4c76275c.jpg" alt="Photo 46" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.04_11925f57.jpg" alt="Photo 47" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.03_e8c4b7fa.jpg" alt="Photo 48" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.47_49711620.jpg" alt="Photo 49" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.48_3f24989c.jpg" alt="Photo 50" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.48_5c389407.jpg" alt="Photo 51" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.48_c34d4e18.jpg" alt="Photo 52" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.44_db6a544d.jpg" alt="Photo 53" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.44_564c8128.jpg" alt="Photo 54" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.45_92f906f5.jpg" alt="Photo 55" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.56.45_cd46c9aa.jpg" alt="Photo 56" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.02_592aad3e.jpg" alt="Photo 57" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.02_0602e175.jpg" alt="Photo 58" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.03_820e9668.jpg" alt="Photo 59" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.04_b7179a92.jpg" alt="Photo 60" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.04_7380d827.jpg" alt="Photo 61" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.05_54a68405.jpg" alt="Photo 62" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.49_6457f6ba.jpg" alt="Photo 63" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.50_7745c80e.jpg" alt="Photo 64" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.52_c7720bd4.jpg" alt="Photo 65" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.55_ff748598.jpg" alt="Photo 66" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.52_8b5173e0.jpg" alt="Photo 67" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.53_01efa3f1.jpg" alt="Photo 68" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.53_462a2576.jpg" alt="Photo 69" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.56_5798666e.jpg" alt="Photo 70" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.56_55950573.jpg" alt="Photo 71" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.57_a47d4be4.jpg" alt="Photo 72" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.00_914ca289.jpg" alt="Photo 73" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.59_61a18f20.jpg" alt="Photo 74" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.01_0d82151b.jpg" alt="Photo 75" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.02_eb3b7837.jpg" alt="Photo 76" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.00_b8d890fb.jpg" alt="Photo 77" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.01_b9070713.jpg" alt="Photo 78" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.58_7d9779f9.jpg" alt="Photo 79" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.00_c3204163.jpg" alt="Photo 80" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.55_2a4275a7.jpg" alt="Photo 81" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.57.52_7ca211af.jpg" alt="Photo 82" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.34_0d845994.jpg" alt="Photo 83" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.35_6aa6d7c3.jpg" alt="Photo 84" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.02_7cec09b7.jpg" alt="Photo 85" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.02_4f5920fe.jpg" alt="Photo 86" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.03_2f422937.jpg" alt="Photo 87" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.37_49382fd6.jpg" alt="Photo 88" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.36_e4a8a667.jpg" alt="Photo 89" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.39_2d252f33.jpg" alt="Photo 90" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.38_f2314fa2.jpg" alt="Photo 91" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.39_7f8744b4.jpg" alt="Photo 92" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.40_738f45b5.jpg" alt="Photo 93" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.40_64e87359.jpg" alt="Photo 94" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.41_82ee1391.jpg" alt="Photo 95" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.42_4fc01b94.jpg" alt="Photo 96" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.48_1e8f5c1f.jpg" alt="Photo 97" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.47_98c96cb1.jpg" alt="Photo 98" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.46_d83d3601.jpg" alt="Photo 99" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.45_9ec3d7b1.jpg" alt="Photo 100" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.46_84584200.jpg" alt="Photo 101" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.58_b5ae6343.jpg" alt="Photo 102" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.57_cda2db9e.jpg" alt="Photo 103" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.58.58_bc744406.jpg" alt="Photo 104" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.37_0c0734d6.jpg" alt="Photo 105" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.36_f4397871.jpg" alt="Photo 106" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.35_ba1628b0.jpg" alt="Photo 107" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.33_00bb2040.jpg" alt="Photo 108" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.32_b632e356.jpg" alt="Photo 109" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.42_b5e37ced.jpg" alt="Photo 110" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.43_a1804e10.jpg" alt="Photo 111" onclick="openModal(this)">
+          <img src="assets/photo Gallery/WhatsApp Image 2025-08-13 at 01.59.44_3a45829c.jpg" alt="Photo 112" onclick="openModal(this)">
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({ duration: 800, easing: 'ease-in-out', once: false, mirror: true, offset: 100 });
+
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuBtn = document.getElementById('menuToggleBtn');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+      if (menuBtn) menuBtn.classList.toggle('open');
+      document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    }
+
+    // Close sidebar on link click
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+        const btn = document.getElementById('menuToggleBtn');
+        if (btn) btn.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // About submenu toggle (click and hover)
+    (function(){
+      const aboutToggle = document.getElementById('aboutToggle');
+      const aboutMenu = document.getElementById('aboutMenu');
+      const submenu = document.getElementById('aboutSubmenu');
+      if (aboutToggle && aboutMenu && submenu) {
+        // Click functionality
+        aboutToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          aboutMenu.classList.toggle('open');
+          submenu.classList.toggle('open');
+        });
+        
+        // Hover functionality
+        aboutMenu.addEventListener('mouseenter', () => {
+          aboutMenu.classList.add('open');
+          submenu.classList.add('open');
+        });
+        
+        aboutMenu.addEventListener('mouseleave', () => {
+          aboutMenu.classList.remove('open');
+          submenu.classList.remove('open');
+        });
+      }
+    })();
+
+    // Scroll progress
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.body.offsetHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+    });
+
+    // Smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Loading animation
+    document.querySelectorAll('section').forEach((sec, i) => {
+      sec.style.animationDelay = `${i * 0.1}s`;
+      sec.classList.add('loading');
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('active')) toggleSidebar();
+        closeModal();
+      }
+    });
+
+    // Modal functionality for image popup
+    function openModal(img) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'block';
+      modalImg.src = img.src;
+      modalImg.alt = img.alt;
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+      const modal = document.getElementById('imageModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+
+  <footer>
+    <p>&copy; 2026 NEPS NewEarth Projects And Services. All Rights Reserved.</p>
+    <p style="margin-top: 8px; opacity: 0.8;">Empowering communities, building futures, leaving no one behind.</p>
+</footer>
+
+</body>
+</html>
