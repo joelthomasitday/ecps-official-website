@@ -1,0 +1,151 @@
+/* Mobile Navbar Responsiveness Fixes */
+
+/* Header Mobile Adjustments */
+@media (max-width: 1024px) {
+  header {
+    padding: 15px 30px !important;
+  }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 10px 15px !important;
+        justify-content: flex-start !important;
+        height: auto !important;
+        min-height: 70px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1002;
+    }
+
+    header .left-logo {
+        margin-left: 0 !important;
+        gap: 10px !important;
+        display: flex;
+        align-items: center;
+        flex: 1;
+        width: 100%;
+    }
+
+    header img {
+        height: 45px !important;
+        width: auto !important; /* Show full logo with text */
+        max-width: calc(100vw - 70px) !important; /* Prevent overflow */
+        object-fit: contain !important;
+        object-position: left !important;
+    }
+
+    header h2 {
+        display: none !important; /* Hide redundant 'ECPS' text to give room to the logo text */
+    }
+
+    .main-content {
+        padding-top: 90px !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        padding-top: 90px !important;
+        z-index: 1001;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 15px !important;
+        min-height: 65px;
+    }
+
+    header img {
+        height: 40px !important;
+        max-width: calc(100vw - 60px) !important;
+    }
+
+    /* Section adjustments for small screens */
+    .title-section,
+    .about-section,
+    .theme-songs-section,
+    .contact-section,
+    .dictum,
+    .section,
+    .gallery-section {
+        padding: 30px 20px !important;
+        margin: 15px 12px !important;
+        border-radius: 20px !important;
+        width: auto !important;
+    }
+
+    .dictum {
+        font-size: 1.2em !important;
+        padding: 30px 20px !important;
+    }
+
+    .title-section h1 {
+        font-size: 2em !important;
+    }
+
+    .song-card,
+    .contact-card,
+    .partner-card {
+        padding: 20px !important;
+        margin-bottom: 15px;
+    }
+
+    .main-content {
+        padding-top: 85px !important;
+    }
+}
+
+/* Breakpoint for 320px specific fixes */
+@media (max-width: 320px) {
+  header img {
+    height: 35px !important;
+    width: 35px !important;
+  }
+
+  .sidebar nav ul li a {
+    padding: 14px 15px !important;
+    font-size: 0.95em;
+  }
+}
+
+/* General Responsiveness Fixes */
+body,
+html {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for containers that might overflow */
+.theme-songs-container,
+.contact-container,
+.grid,
+.photo-gallery {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Better touch targets for sidebar */
+.sidebar nav ul li a {
+  display: flex !important;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+/* Sidebar behavior */
+.sidebar.active {
+  transform: translateX(0) !important;
+}
