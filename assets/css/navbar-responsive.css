@@ -1,4 +1,8 @@
 /* Mobile Navbar Responsiveness Fixes */
+header img {
+    mix-blend-mode: screen;
+    filter: brightness(1.1);
+}
 
 /* Header Mobile Adjustments */
 @media (max-width: 1024px) {
@@ -35,10 +39,12 @@
         max-width: calc(100vw - 70px) !important; /* Prevent overflow */
         object-fit: contain !important;
         object-position: left !important;
+        mix-blend-mode: screen;
+        filter: brightness(1.1);
     }
 
     header h2 {
-        display: none !important; /* Hide redundant 'ECPS' text to give room to the logo text */
+        display: none !important; /* Hide redundant 'NEPS' text to give room to the logo text */
     }
 
     .main-content {
