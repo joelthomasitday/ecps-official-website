@@ -1,377 +1,299 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Functions - NEPS</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/navbar-responsive.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    :root {
-      --primary-color: #1e40af;
-      --secondary-color: #3b82f6;
-      --accent-color: #f59e0b;
-      --text-dark: #1f2937;
-      --text-light: #6b7280;
-      --bg-light: #f8fafc;
-      --white: #ffffff;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    }
-
-    body {
-      background: url('assets/img/background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: var(--text-dark);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    /* Sidebar (match homepage) */
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(135deg, #003366, #005588);
-      backdrop-filter: blur(20px);
-      color: var(--white);
-      height: 100vh;
-      padding-top: 120px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      transform: translateX(-100%);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1000;
-      overflow-y: auto;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar.active { transform: translateX(0); }
-
-    .sidebar nav ul { list-style: none; padding: 0 20px; }
-
-    .sidebar nav ul li { margin-bottom: 8px; border-radius: 12px; overflow: hidden; }
-
-    .sidebar nav ul li a {
-      color: var(--white);
-      text-decoration: none;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      padding: 16px 20px;
-      transition: all 0.3s ease;
-      border-radius: 12px;
-      position: relative;
-    }
-
-    .sidebar nav ul li a i { margin-right: 10px; }
-
-    .sidebar nav ul li a:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(8px); }
-
-    .sidebar nav ul li a::before {
-      content: '';
-      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
-      background: var(--accent-color);
-      transform: scaleY(0);
-      transition: transform 0.3s ease;
-    }
-
-    .sidebar nav ul li a:hover::before { transform: scaleY(1); }
-
-    .office-box { margin: 40px 20px 20px; padding: 24px; background: rgba(255,255,255,0.1); border-radius: 16px; font-size: 0.9em; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
-    .office-box h4 { margin-bottom: 16px; font-size: 1.1em; font-weight: 600; }
-    .office-box a { color: #93c5fd; text-decoration: none; transition: color 0.3s ease; }
-    .office-box a:hover { color: var(--accent-color); }
-
-    /* Submenu styles */
-    .sidebar nav ul li.has-sub > a { justify-content: space-between; }
-    .sidebar nav ul li.has-sub > a .chev { transition: transform 0.3s ease; margin-left: 10px; }
-    .sidebar nav ul li.has-sub.open > a .chev { transform: rotate(90deg); }
-    .submenu { list-style: none; margin: 0 0 8px 0; padding-left: 14px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-    .submenu.open { max-height: 400px; }
-    .submenu li a { padding: 12px 16px; font-weight: 500; }
-    .sidebar nav ul li.has-sub:hover > a .chev { transform: rotate(90deg); }
-    .sidebar nav ul li.has-sub:hover .submenu { max-height: 400px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions | NEPS</title>
+    <meta name="description" content="NEPS Sustainable Development Goals and global implementation strategies.">
+    <link rel="icon" type="image/png" href="favicon.png">
     
-    /* Ensure submenu stays open when hovering over submenu items */
-    .sidebar nav ul li.has-sub .submenu:hover { max-height: 400px; }
-
-    /* Overlay */
-    .overlay { position: fixed; top: 0; left: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: none; z-index: 900; transition: all 0.3s ease; }
-    .overlay.active { display: block; }
-
-    /* Header */
-    header {
-      background: linear-gradient(135deg, #003366, #005588);
-      color: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
-      position: fixed; width: 100%; top: 0; left: 0; z-index: 1002;
-    }
-
-    header .left-logo { display: flex; align-items: center; gap: 15px; margin-left: 20px; }
-    header img { height: 60px; }
-    header h2 { font-size: 1.8em; margin-left: auto; }
-
-    /* Menu Toggle */
-    .menu-toggle { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 12px; border-radius: 12px; transition: all 0.3s ease; z-index: 1003; }
-    .menu-toggle:hover { background: rgba(0, 0, 0, 0.05); }
-    .menu-toggle .bar { width: 25px; height: 3px; background-color: white; transition: all 0.3s ease; border-radius: 2px; }
-    .menu-toggle.open .bar:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
-    .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
-    .menu-toggle.open .bar:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
-
-    /* Main */
-    .main-content { padding-top: 120px; min-height: 100vh; }
-
-    /* Section cards */
-    .section { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px); padding: 80px 40px; margin: 24px; border-radius: 24px; box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; }
-    .section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(135deg, #003366, #005588); }
-    .section h1 { font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 16px; background: linear-gradient(135deg, #003366, #005588); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .section h2 { font-size: 1.6em; font-weight: 600; color: #003366; text-align: center; margin: 24px 0 12px; }
-    .section p { font-size: 1.05em; line-height: 1.8; color: var(--text-dark); text-align: center; margin-bottom: 8px; }
-    .section ul { font-size: 1.05em; line-height: 1.8; color: var(--text-dark); margin: 10px auto; max-width: 1000px; }
-
-    /* Scroll Indicator */
-    .scroll-indicator { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); z-index: 1003; }
-    .scroll-progress { height: 100%; background: linear-gradient(135deg, #f59e0b, #f97316); width: 0%; transition: width 0.3s ease; }
-
-    /* Footer */
-    footer { text-align: center; padding: 32px; background: linear-gradient(135deg, #003366, #005588); color: var(--white); font-size: 0.95em; margin-top: 40px; position: relative; }
-    footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
-
-    /* SDG Grid Styles */
-    .sdg-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin: 40px 0;
-    }
-
-    .sdg-item {
-      background: var(--gradient-primary);
-      color: var(--white);
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .sdg-item:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Images */
-    .images {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 24px;
-    }
-
-    .images img {
-      width: 300px;
-      border-radius: 12px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sidebar { width: 100%; padding-top: 100px; }
-      header { padding: 12px 20px; }
-      header img { height: 40px; }
-      header h2 { font-size: 1.4em; }
-      .section { padding: 40px 24px; margin: 16px; border-radius: 16px; }
-      .section h1 { font-size: 2em; }
-      
-      .sdg-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-
-    }
-  </style>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#f59e0b', 600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 15px -8px rgba(0, 0, 0, 0.05)',
+                        'premium-hover': '0 20px 40px -5px rgba(0, 0, 0, 0.15), 0 12px 20px -8px rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass { @apply bg-white/70 backdrop-blur-md border border-white/20; }
+            .glass-dark { @apply bg-gray-900/40 backdrop-blur-md border border-white/10; }
+            .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-800; }
+        }
+        .hero-gradient { background: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.6)); }
+    </style>
 </head>
-<body>
-  <!-- Scroll Indicator -->
-  <div class="scroll-indicator"><div class="scroll-progress" id="scrollProgress"></div></div>
+<body class="bg-slate-50 text-slate-900 font-sans overflow-x-hidden">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <nav>
-      <ul>
-        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-        <li class="has-sub" id="aboutMenu">
-          <a href="#" id="aboutToggle"><span><i class="fas fa-info-circle"></i> About Us</span> <i class="fas fa-chevron-right chev"></i></a>
-          <ul class="submenu" id="aboutSubmenu">
-            <li><a href="about-mission-vision-purpose.html"><i class="fas fa-bullseye"></i> Mission, Vision & Purpose</a></li>
-            <li><a href="about-board-of-directors.html"><i class="fas fa-users"></i> Board of Directors</a></li>
-            <li><a href="about-board-of-advisors.html"><i class="fas fa-user-tie"></i> Board of Advisors</a></li>
-          </ul>
-        </li>
-        <li><a href="functions.html"><i class="fas fa-cogs"></i> Functions</a></li>
-        <li><a href="partnership.html"><i class="fas fa-handshake"></i> Partnerships & Affiliations</a></li>
-        <li><a href="achievements.html"><i class="fas fa-trophy"></i> Achievements</a></li>
-        <li><a href="news.html"><i class="fas fa-newspaper"></i> News & Upcoming Events</a></li>
-        <li><a href="Photo Gallery.html"><i class="fas fa-image"></i> Photo Gallery</a></li>
-        <li><a href="#"><i class="fas fa-heart"></i> Donate</a></li>
-      </ul>
+    <!-- Progress Bar -->
+    <div id="progress-bar" class="fixed top-0 left-0 h-1 bg-primary-500 z-[100] transition-all duration-300" style="width: 0%"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-500">
+        <div class="glass border-b border-white/10 shadow-premium transition-all duration-300" id="nav-container">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between transition-all duration-300" id="nav-content">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="assets/img/NEPS Nav Logo.png" alt="NEPS Logo" class="h-10 w-auto">
+                    <span class="font-display font-bold text-2xl tracking-tight text-primary-900">NEPS</span>
+                </a>
+                
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="index.html" class="text-sm font-semibold text-slate-700 hover:text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300">Home</a>
+                    <div class="relative group">
+                        <button class="text-sm font-semibold text-slate-700 hover:text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-1">
+                            About Us <i class="fas fa-chevron-down text-[10px] pt-0.5"></i>
+                        </button>
+                        <div class="absolute top-full left-0 pt-2 w-56 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                            <div class="glass rounded-2xl shadow-xl p-2 overflow-hidden border border-slate-100">
+                            <a href="about-mission-vision-purpose.html" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-600 rounded-xl transition-colors">Mission & Vision</a>
+                            <a href="about-board-of-directors.html" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-600 rounded-xl transition-colors">Board of Directors</a>
+                            <a href="about-board-of-advisors.html" class="block px-4 py-3 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-600 rounded-xl transition-colors">Board of Advisors</a>
+                        </div>
+                        </div>
+                    </div>
+                    <a href="functions.html" class="text-sm font-semibold text-primary-600 bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300">Functions</a>
+                    <a href="partnership.html" class="text-sm font-semibold text-slate-700 hover:text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300">Partnerships</a>
+                    <a href="achievements.html" class="text-sm font-semibold text-slate-700 hover:text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300">Achievements</a>
+                    <a href="news.html" class="text-sm font-semibold text-slate-700 hover:text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all duration-300">News</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 text-white rounded-full text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-700 hover:-translate-y-0.5 transition-all duration-300">Donate</a>
+                    <button class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors" id="mobile-menu-btn">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </nav>
-     <div class="office-box">
-      <h4><i class="fas fa-building"></i> Office Address</h4>
-      <p>37/115, KBC Building, S.A.Road,<br/> Kadavanthara, Kochi - 682 020, Kerala</p>
-      <h4><i class="fas fa-envelope"></i> Contact Emails</h4>
-      <p>
-        <a href="mailto:neps.kochi@gmail.com"><i class="fas fa-envelope"></i> neps.kochi@gmail.com</a><br/>
-        <a href="mailto:josephanil2007@gmail.com"><i class="fas fa-envelope"></i> josephanil2007@gmail.com</a><br/>
-        <a href="mailto:ajabrahamj@gmail.com"><i class="fas fa-envelope"></i> ajabrahamj@gmail.com</a>
-      </p>
-    </div>
-  </aside>
 
-  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-  <!-- Header -->
-  <header data-aos="fade-down">
-      <div class="left-logo">
-        <button class="menu-toggle" onclick="toggleSidebar()" id="menuToggleBtn">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-[60] bg-slate-900/95 backdrop-blur-lg flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button id="close-mobile-menu" class="absolute top-8 right-8 text-white text-2xl">
+            <i class="fas fa-times"></i>
         </button>
-              <a href="index.html"><img src="assets/img/NEPS Nav Logo.png" alt="NEPS Logo" /></a>
-      </div>
-    <h2>NEPS</h2>
-    </header>
+        <a href="index.html" class="text-2xl font-bold text-white hover:text-primary-400">Home</a>
+        <a href="about-mission-vision-purpose.html" class="text-2xl font-bold text-white hover:text-primary-400">About Us</a>
+        <a href="functions.html" class="text-2xl font-bold text-white hover:text-primary-400">Functions</a>
+        <a href="partnership.html" class="text-2xl font-bold text-white hover:text-primary-400">Partnerships</a>
+        <a href="achievements.html" class="text-2xl font-bold text-white hover:text-primary-400">Achievements</a>
+        <a href="Photo Gallery.html" class="text-2xl font-bold text-white hover:text-primary-400">Gallery</a>
+        <a href="#" class="mt-4 px-10 py-4 bg-primary-600 text-white rounded-full text-xl font-bold">Donate Now</a>
+    </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <section class="section" data-aos="fade-up" data-aos-delay="50">
-      <h1>17 United Nations Sustainable Development Goals (SDGs)</h1>
-      <p>MOBILIZING international support for implementation of the UN SDG 2030 and PFF (Pact for the Future) adopted by the UN General Assembly in 2024.</p>
-      <p>INVITING partners to implement and support the Global Development Agenda on SDGs and PFF.</p>
-      <div class="section-box" style="background:#f0f7ff; padding:20px; border-left:4px solid #007acc; border-radius:10px; margin-top:20px;">
-        <p style="text-align:left">A universal call to action adopted in 2015 to achieve a better and more sustainable future by 2030:</p>
-        <ul style="padding-left: 20px; line-height: 1.8; text-align:left">
-          <li>No Poverty</li><li>Zero Hunger</li><li>Good Health and Well‑Being</li><li>Quality Education</li><li>Gender Equality</li>
-          <li>Clean Water and Sanitation</li><li>Affordable and Clean Energy</li><li>Decent Work and Economic Growth</li><li>Industry, Innovation and Infrastructure</li>
-          <li>Reduced Inequalities</li><li>Sustainable Cities and Communities</li><li>Responsible Consumption and Production</li><li>Climate Action</li>
-          <li>Life Below Water</li><li>Life on Land</li><li>Peace, Justice and Strong Institutions</li><li>Partnerships for the Goals</li>
-        </ul>
-      </div>
-
-      <div class="images">
-        <img src="assets/img/about/mission1.jpg" alt="Mission Image 1">
-        <img src="assets/img/about/mission2.jpg" alt="Mission Image 2" style="width:400px;">
-        <img src="assets/img/about/mission3.jpg" alt="Mission Image 3">
-      </div>
+    <!-- Subpage Hero -->
+    <section class="relative pt-40 pb-20 bg-slate-900 border-b border-white/5">
+        <div class="absolute inset-0 z-0">
+            <img src="assets/img/background.jpg" alt="Hero Background" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-slate-900"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <h1 class="font-display font-bold text-5xl md:text-7xl text-white mb-6" data-aos="fade-up">Sustainable <span class="text-primary-500">Functions</span></h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-3xl leading-relaxed" data-aos="fade-up" data-aos-delay="100">
+                Mobilizing international support for implementation of the UN Sustainable Development Goals (SDGs) 2030 and Pact for the Future.
+            </p>
+        </div>
     </section>
-  </div>
 
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <script>
-    // Initialize AOS
-    AOS.init({ duration: 800, easing: 'ease-in-out', once: false, mirror: true, offset: 100 });
+    <!-- Main Content Section -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="bg-slate-50 rounded-[3rem] p-8 md:p-16 border border-slate-100 shadow-premium overflow-hidden relative" data-aos="fade-up">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                
+                <h2 class="font-display font-bold text-3xl md:text-4xl text-slate-900 mb-8">17 United Nations Sustainable Development Goals (SDGs)</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div class="space-y-6">
+                        <p class="text-lg text-slate-600 leading-relaxed">
+                            NEPS is actively <span class="font-bold text-primary-700">INVITING partners</span> to implement and support the Global Development Agenda on SDGs and PFF, adopted by the UN General Assembly in 2024.
+                        </p>
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-bullseye text-primary-600"></i> A Universal Call to Action
+                            </h3>
+                            <p class="text-slate-500 mb-6">Adopted in 2015 to achieve a better and more sustainable future by 2030, covering these core areas:</p>
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-medium text-slate-600">
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> No Poverty</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Zero Hunger</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Good Health & Well-being</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Quality Education</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Gender Equality</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Clean Water & Sanitation</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Affordable & Clean Energy</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Decent Work</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Industry & Infrastructure</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Reduced Inequalities</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Sustainable Cities</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Climate Action</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Life Below Water</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Life on Land</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Peace & Justice</li>
+                                <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-500"></span> Partnerships</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="relative group rounded-[2.5rem] overflow-hidden shadow-xl" data-aos="fade-left">
+                            <img src="assets/img/about/mission1.jpg" alt="Mission" class="w-full h-auto transform transition-transform duration-700 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <img src="assets/img/about/mission2.jpg" alt="Mission" class="rounded-[2rem] shadow-lg w-full h-48 object-cover" data-aos="fade-up">
+                            <img src="assets/img/about/mission3.jpg" alt="Mission" class="rounded-[2rem] shadow-lg w-full h-48 object-cover" data-aos="fade-up" data-aos-delay="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    // Sidebar toggle
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-      const menuBtn = document.getElementById('menuToggleBtn');
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-      if (menuBtn) menuBtn.classList.toggle('open');
-      document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-    }
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 pt-24 pb-12 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Branding -->
+                <div class="col-span-1 lg:col-span-1">
+                    <a href="index.html" class="flex items-center gap-3 mb-8">
+                        <img src="assets/img/NEPS Nav Logo.png" alt="NEPS Logo" class="h-12 w-auto brightness-0 invert text-white">
+                        <span class="font-display font-bold text-3xl tracking-tight text-white">NEPS</span>
+                    </a>
+                    <p class="leading-relaxed font-light mb-8">
+                        Empowering countries with special needs through education, health, technology, and humanities for a sustainable and inclusive future.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 hover:text-white transition-all"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 hover:text-white transition-all"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 hover:text-white transition-all"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-primary-600 hover:border-primary-600 hover:text-white transition-all"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
 
-    // Close sidebar on link click
-    document.querySelectorAll('.sidebar a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.getElementById('sidebar').classList.remove('active');
-        document.getElementById('overlay').classList.remove('active');
-        const btn = document.getElementById('menuToggleBtn');
-        if (btn) btn.classList.remove('open');
-        document.body.style.overflow = '';
-      });
-    });
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-8 uppercase tracking-widest text-sm">Quick Links</h4>
+                    <ul class="space-y-4 font-light">
+                        <li><a href="index.html" class="hover:text-primary-400 transition-colors">Home</a></li>
+                        <li><a href="about-mission-vision-purpose.html" class="hover:text-primary-400 transition-colors">Mission & Vision</a></li>
+                        <li><a href="partnership.html" class="hover:text-primary-400 transition-colors">Partnerships</a></li>
+                        <li><a href="achievements.html" class="hover:text-primary-400 transition-colors">Recent Achievements</a></li>
+                        <li><a href="news.html" class="hover:text-primary-400 transition-colors">News Updates</a></li>
+                    </ul>
+                </div>
 
-    // About submenu toggle (click and hover)
-    (function(){
-      const aboutToggle = document.getElementById('aboutToggle');
-      const aboutMenu = document.getElementById('aboutMenu');
-      const submenu = document.getElementById('aboutSubmenu');
-      if (aboutToggle && aboutMenu && submenu) {
-        // Click functionality
-        aboutToggle.addEventListener('click', (e) => {
-          e.preventDefault();
-          aboutMenu.classList.toggle('open');
-          submenu.classList.toggle('open');
+                <!-- Services -->
+                <div>
+                    <h4 class="text-white font-bold mb-8 uppercase tracking-widest text-sm">Our Focus</h4>
+                    <ul class="space-y-4 font-light">
+                        <li><a href="functions.html" class="hover:text-primary-400 transition-colors">UN SDGs Implementation</a></li>
+                        <li><a href="functions.html" class="hover:text-primary-400 transition-colors">Procurement Services</a></li>
+                        <li><a href="functions.html" class="hover:text-primary-400 transition-colors">Project Management</a></li>
+                        <li><a href="functions.html" class="hover:text-primary-400 transition-colors">Educational Seminars</a></li>
+                        <li><a href="functions.html" class="hover:text-primary-400 transition-colors">Global Development</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-bold mb-8 uppercase tracking-widest text-sm">Contact Info</h4>
+                    <ul class="space-y-6 font-light text-sm">
+                        <li class="flex items-start gap-4">
+                            <i class="fas fa-map-marker-alt text-primary-500 mt-1"></i>
+                            <span>Kochi, Kerala, India</span>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <i class="fas fa-envelope text-primary-500 mt-1"></i>
+                            <a href="mailto:josephanil2007@gmail.com" class="hover:text-white">josephanil2007@gmail.com</a>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <i class="fas fa-phone-alt text-primary-500 mt-1"></i>
+                            <a href="tel:+919037016730" class="hover:text-white">+91 90370 16730</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest">
+                <p>© 2026 NEPS NEW EARTH PROJECTS AND SERVICES. ALL RIGHTS RESERVED.</p>
+                <div class="flex gap-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, easing: 'ease-out-cubic', once: true, offset: 50 });
+
+        const navbar = document.getElementById('navbar');
+        const navContainer = document.getElementById('nav-container');
+        const navContent = document.getElementById('nav-content');
+        const progressBar = document.getElementById('progress-bar');
+
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (scrollPos / height) * 100;
+            progressBar.style.width = `${scrolled}%`;
+
+            if (scrollPos > 50) {
+                navContent.classList.add('py-3');
+                navContent.classList.remove('py-4');
+                navContainer.classList.add('bg-white/95', 'backdrop-blur-xl', 'shadow-xl');
+            } else {
+                navContent.classList.add('py-4');
+                navContent.classList.remove('py-3');
+                navContainer.classList.remove('bg-white/95', 'backdrop-blur-xl', 'shadow-xl');
+            }
         });
-        
-        // Hover functionality
-        aboutMenu.addEventListener('mouseenter', () => {
-          aboutMenu.classList.add('open');
-          submenu.classList.add('open');
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+            document.body.classList.add('overflow-hidden');
         });
-        
-        aboutMenu.addEventListener('mouseleave', () => {
-          aboutMenu.classList.remove('open');
-          submenu.classList.remove('open');
+
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+            document.body.classList.remove('overflow-hidden');
         });
-      }
-    })();
-
-    // Scroll progress
-    window.addEventListener('scroll', () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight = document.body.offsetHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
-    });
-
-    // Smooth anchor scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-
-    // Loading animation
-    document.querySelectorAll('section').forEach((sec, i) => {
-      sec.style.animationDelay = `${i * 0.1}s`;
-      sec.classList.add('loading');
-    });
-
-    // ESC closes sidebar
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('active')) toggleSidebar();
-      }
-    });
-  </script>
-
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2026 NEPS NewEarth Projects And Services. All Rights Reserved.</p>
-    <p style="margin-top: 8px; opacity: 0.8;">Empowering communities, building futures, leaving no one behind.</p>
-  </footer>
-
+    </script>
 </body>
 </html>

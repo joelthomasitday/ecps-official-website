@@ -1,0 +1,190 @@
+{
+  "design_system": {
+    "color_tokens": {
+      "primary": "#69a64e",
+      "secondary": "#5e9bd4",
+      "text_primary": "#1d1d1d",
+      "text_muted": "rgba(29, 29, 29, 0.7)",
+      "background_white": "#ffffff",
+      "background_alt": "#dbcccc",
+      "accent_green": "#69a64e",
+      "accent_blue": "#5e9bd4"
+    },
+    "typography_tokens": {
+      "font_families": {
+        "headings": "'Rubik', sans-serif",
+        "body": "Arial, Helvetica, sans-serif"
+      },
+      "font_sizes": {
+        "h1": "60px",
+        "h2": "40px",
+        "h3": "26px",
+        "body": "18px",
+        "small": "14px",
+        "nav": "16px"
+      },
+      "font_weights": {
+        "light": 300,
+        "regular": 400,
+        "medium": 500,
+        "bold": 700
+      },
+      "line_heights": {
+        "h1": "1.4",
+        "h2": "1.4",
+        "h3": "1.2",
+        "body": "1.6"
+      }
+    },
+    "layout_spacing": {
+      "container_width": "1200px",
+      "section_padding_v": "100px",
+      "section_padding_h": "20px",
+      "grid_gap": "40px",
+      "border_radius": "0px"
+    },
+    "ui_components": {
+      "buttons": {
+        "primary": {
+          "background": "#69a64e",
+          "color": "#ffffff",
+          "border_radius": "0px",
+          "text_transform": "uppercase",
+          "font_weight": "bold",
+          "padding": "15px 30px"
+        },
+        "secondary": {
+          "background": "#5e9bd4",
+          "color": "#ffffff",
+          "border_radius": "0px",
+          "text_transform": "uppercase",
+          "font_weight": "bold",
+          "padding": "15px 30px"
+        }
+      },
+      "navbar": {
+        "height": "100px",
+        "background": "#ffffff",
+        "sticky": true,
+        "cta_button": "Donate"
+      },
+      "hero": {
+        "height": "80vh",
+        "overlay_opacity": "0.3",
+        "text_align": "center"
+      },
+      "footer": {
+        "background": "#ffffff",
+        "text_color": "#1d1d1d",
+        "border_top": "1px solid #eeeeee"
+      }
+    },
+    "responsive_breakpoints": {
+      "mobile": "480px",
+      "tablet": "768px",
+      "desktop": "1200px"
+    },
+    "accessibility": {
+      "contrast_ratio_min": "4.5:1",
+      "focus_state": "2px solid #5e9bd4"
+    }
+  },
+  "redesigned_pages": {
+    "homepage": {
+      "title": "NEPS - Redesigned Homepage",
+      "structure": [
+        {
+          "type": "navigation",
+          "links": [
+            "Home",
+            "About Us",
+            "Functions",
+            "Partnership",
+            "Achievements",
+            "News",
+            "Photo Gallery"
+          ],
+          "cta": "Donate"
+        },
+        {
+          "type": "hero",
+          "headline": "NEPS - New Earth Center For Projects and Services",
+          "subheadline": "Propelling Peace, Justice and Sustainable Development through collaborative action.",
+          "background_image": "assets/img/hero-mission.jpg",
+          "cta": {
+            "text": "LEARN MORE",
+            "style": "secondary"
+          }
+        },
+        {
+          "type": "split_section",
+          "id": "about",
+          "image_side": "right",
+          "image": "assets/img/peace-work.jpg",
+          "headline": "About NEPS",
+          "content": "NEPS is a premier organization dedicated to creating a 'New Earth' through innovative projects and services. We focus on humanitarian aid, social justice, and sustainable development goals.",
+          "cta": {
+            "text": "OUR STORY",
+            "style": "secondary"
+          }
+        },
+        {
+          "type": "dictum_section",
+          "text": "Justice is the path to Peace. Collaborative action is the engine of change.",
+          "background": "#69a64e"
+        },
+        {
+          "type": "grid_section",
+          "id": "functions",
+          "headline": "Our Functions",
+          "items": [
+            {
+              "title": "Project Management",
+              "description": "Executing high-impact social projects."
+            },
+            {
+              "title": "Consultancy",
+              "description": "Expert advice for sustainable growth."
+            },
+            {
+              "title": "Service Delivery",
+              "description": "Direct support to communities in need."
+            }
+          ]
+        },
+        {
+          "type": "footer",
+          "sections": [
+            {
+              "title": "Contact",
+              "content": "37/115, KBC Building, S.A.Road, Kochi - 682 020"
+            },
+            { "title": "Email", "content": "neps.kochi@gmail.com" }
+          ]
+        }
+      ]
+    },
+    "subpage_about": {
+      "title": "Mission, Vision & Purpose",
+      "structure": [
+        {
+          "type": "subpage_header",
+          "headline": "Mission, Vision & Purpose",
+          "background_image": "assets/img/subpage-hero.jpg"
+        },
+        {
+          "type": "centered_content",
+          "headline": "Our Vision",
+          "content": "To be a global leader in fostering peace and sustainability by empowering local communities and bridging the gap between resources and needs."
+        },
+        {
+          "type": "split_section",
+          "image_side": "left",
+          "image": "assets/img/mission-focus.jpg",
+          "headline": "Our Mission",
+          "content": "To provide high-quality management and technical services for humanitarian and development projects, ensuring transparency, efficiency, and impact."
+        }
+      ]
+    }
+  }
+}
